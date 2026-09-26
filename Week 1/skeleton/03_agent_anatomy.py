@@ -79,22 +79,29 @@ example = AgentBlueprint(
 
 
 # ---------------------------------------------------------------------------
-# YOUR BLUEPRINT — TODO: design an agent of your own
+# YOUR BLUEPRINT — Automated PR Reviewer & Test Runner Agent
 # ---------------------------------------------------------------------------
 my_agent = AgentBlueprint(
-    name="TODO: name your agent",
-    goal="TODO: what should it achieve?",
-    done_when="TODO: how do you KNOW it's finished?",
+    name="Automated PR Reviewer & Test Runner",
+    goal="Review open pull requests in a repository, execute linting and tests, analyze diffs for security and quality issues, and post a structured review.",
+    done_when="A detailed review comment with pass/fail status and code suggestions is posted to the PR, or author is alerted if tests could not be run.",
     tools=[
-        "TODO: tool 1",
-        "TODO: tool 2",
+        "fetch_pr_diff(repo, pr_number) -> diff_text",
+        "run_linter_and_tests(branch) -> test_results_dict",
+        "post_pr_review_comment(repo, pr_number, comment_body) -> bool",
     ],
     memory=[
-        "TODO: what must it remember?",
+        "PR metadata (PR number, author, target branch, files modified)",
+        "Linter and test execution logs",
+        "Identified bugs, security risks, or style deviations",
+        "Final review decision (Approve / Request Changes)",
     ],
     actions=[
-        "TODO: step 1",
-        "TODO: step 2",
+        "Fetch the PR diff and list of modified files using fetch_pr_diff",
+        "Execute automated test suite and linter on the PR branch using run_linter_and_tests",
+        "Analyze modified lines against project style guidelines and security patterns",
+        "Synthesize test logs and static analysis into a markdown review summary",
+        "Post the review comment to GitHub using post_pr_review_comment",
     ],
 )
 
