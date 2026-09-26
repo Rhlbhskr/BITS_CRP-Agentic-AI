@@ -93,18 +93,27 @@ class LLMClient:
 
             # --- Google Gemini ---
             elif self.provider == "google":
+                import time
                 gen_model = self.client.GenerativeModel(
                     model_name=model,
                     system_instruction=system_message,
                 )
-                resp = gen_model.generate_content(
-                    prompt,
-                    generation_config={
-                        "temperature": temperature,
-                        "max_output_tokens": max_tokens,
-                    },
-                )
-                return resp.text
+                for attempt in range(4):
+                    try:
+                        resp = gen_model.generate_content(
+                            prompt,
+                            generation_config={
+                                "temperature": temperature,
+                                "max_output_tokens": max_tokens,
+                            },
+                        )
+                        return resp.text
+                    except Exception as ge:
+                        if "429" in str(ge) and attempt < 3:
+                            print(f"[LLMClient] Rate limit hit (free tier). Waiting 15s before retry ({attempt+1}/3)...")
+                            time.sleep(15)
+                        else:
+                            raise ge
 
         except Exception as e:
             print(f"[LLMClient] Error from provider '{self.provider}': {e}")
